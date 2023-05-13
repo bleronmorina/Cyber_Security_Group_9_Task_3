@@ -124,5 +124,46 @@ static ArrayList<ArrayList<Integer>> getCofactor(ArrayList<ArrayList<Integer>> m
     }
     return temp;
 }
+static int determinantOfMatrix(ArrayList<ArrayList<Integer>> mat, int n) {
+    int D = 0;
 
+    if (n == 1) {
+        return mat.get(0).get(0);
+    }
+
+    ArrayList<ArrayList<Integer>> temp = new ArrayList<ArrayList<Integer>>();
+
+    int sign = 1;
+
+    for (int f = 0; f < n; f++) {
+        temp = getCofactor(mat, 0, f, n);
+        D += sign * mat.get(0).get(f)* determinantOfMatrix(temp, n - 1);
+        sign = -sign;
+    }
+    return mod26(D);
+}
+
+
+static int findDetInverse(int R , int D) {
+    int i = 0 ;
+    int[] p = {0,1};
+    int[] q = new int[100];
+
+    while(R!=0) {
+        q[i] = D/R ;
+        int oldD = D ;
+        D = R ;
+        R = oldD%R ;
+        if(i>1) {
+            p[i] = mod26(p[i-2] - p[i-1]*q[i-2]) ;
+        }
+        i++ ;
+    }
+    if (i == 1) {
+        return 1;
+    }
+    else {
+        return p[i-2] - p[i-1]*q[i-2] ;
+    }
+}
 }
