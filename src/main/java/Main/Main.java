@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/Main/HillCipherEncrypt.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/Main/HillCipher.fxml"));
         primaryStage.setScene(new Scene(root, 620,420));
         primaryStage.show();
     }
