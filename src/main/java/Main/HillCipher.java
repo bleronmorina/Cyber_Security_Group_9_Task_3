@@ -5,7 +5,10 @@ import java.util.ArrayList;
 public class HillCipher {
     public static String encrypt(String plainText, int[][] key) {
         // Remove all non-alphabetic characters and convert to upper case
-        plainText = plainText.replaceAll("[^A-Za-z]", "").toUpperCase();
+        plainText = plainText.replaceAll("[^A-Za-zËÇëç]", "").toUpperCase();
+
+        System.out.println(plainText);
+
 
         // Add padding if necessary
         int padding = (key.length - (plainText.length() % key.length)) % key.length;
@@ -16,7 +19,15 @@ public class HillCipher {
         // Convert plaintext to matrix of numbers
         int[] plainTextNumbers = new int[plainText.length()];
         for (int i = 0; i < plainText.length(); i++) {
-            plainTextNumbers[i] = (int) plainText.charAt(i) - 65;
+            if(plainText.charAt(i) == 'Ë'){
+                plainTextNumbers[i] = 26;
+            }
+            else if(plainText.charAt(i) == 'Ç'){
+                plainTextNumbers[i] = 27;
+            }
+            else {
+                plainTextNumbers[i] = (int) plainText.charAt(i) - 65;
+            }
         }
         int[][] plainTextMatrix = new int[key.length][plainTextNumbers.length / key.length];
         int index = 0;
@@ -34,7 +45,7 @@ public class HillCipher {
                 for (int k = 0; k < key.length; k++) {
                     sum += key[i][k] * plainTextMatrix[k][j];
                 }
-                cipherTextMatrix[i][j] = sum % 26;
+                cipherTextMatrix[i][j] = sum % 28;
             }
         }
 
@@ -67,11 +78,11 @@ public class HillCipher {
         // Compute the inverse of the key matrix
         int[][] inverseKey = new int[n][n];
         int det = determinantOfMatrix(key, n);
-        int detInverse = findDetInverse(mod26(det), 26);
+        int detInverse = findDetInverse(mod28(det), 28, n);
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 ArrayList<ArrayList<Integer>> cofactor = getCofactor(key, i, j, n);
-                inverseKey[j][i] = mod26((int) (detInverse * Math.pow(-1, i + j) * determinantOfMatrix(cofactor, n - 1)));
+                inverseKey[j][i] = mod28((int) (detInverse * Math.pow(-1, i + j) * determinantOfMatrix(cofactor, n - 1)));
             }
         }
 
@@ -83,7 +94,7 @@ public class HillCipher {
                 for (int k = 0; k < inverseKey.length; k++) {
                     sum += inverseKey[i][k] * ciphertextMatrix[k][j];
                 }
-                plaintextMatrix[i][j] = mod26(sum);
+                plaintextMatrix[i][j] = mod28(sum);
             }
         }
 
@@ -91,7 +102,15 @@ public class HillCipher {
         StringBuilder plaintextBuilder = new StringBuilder();
         for (int j = 0; j < plaintextMatrix[0].length; j++) {
             for (int i = 0; i < plaintextMatrix.length; i++) {
-                plaintextBuilder.append((char) (plaintextMatrix[i][j] + 65));
+                if(plaintextMatrix[i][j] == 26){
+                    plaintextBuilder.append('Ë');
+                }
+                else if(plaintextMatrix[i][j] == 27){
+                    plaintextBuilder.append('Ç');
+                }
+                else {
+                    plaintextBuilder.append((char) (plaintextMatrix[i][j] + 65));
+                }
             }
         }
 
@@ -103,8 +122,8 @@ public class HillCipher {
 
         return plaintextBuilder.toString();
     }
-static int mod26(int x) {
-    return x >= 0 ? (x%26) : 26-(Math.abs(x)%26) ;
+static int mod28(int x) {
+    return x >= 0 ? (x%28) : 28-(Math.abs(x)%28) ;
 }
 
 static ArrayList<ArrayList<Integer>> getCofactor(ArrayList<ArrayList<Integer>> mat, int p, int q, int n) {
@@ -140,30 +159,30 @@ static int determinantOfMatrix(ArrayList<ArrayList<Integer>> mat, int n) {
         D += sign * mat.get(0).get(f)* determinantOfMatrix(temp, n - 1);
         sign = -sign;
     }
-    return mod26(D);
+    return mod28(D);
 }
 
 
-static int findDetInverse(int R , int D) {
-    int i = 0 ;
-    int[] p = {0,1};
-    int[] q = new int[100];
+    static int findDetInverse(int R, int D, int level) {
+        int i = 0;
+        int[] p = {0, 1, 0};
+        int[] q = new int[100];
 
-    while(R!=0) {
-        q[i] = D/R ;
-        int oldD = D ;
-        D = R ;
-        R = oldD%R ;
-        if(i>1) {
-            p[i] = mod26(p[i-2] - p[i-1]*q[i-2]) ;
+        while (R != 0) {
+            q[i] = D / R;
+            int oldD = D;
+            D = R;
+            R = oldD % R;
+            if (i > 1) {
+                p[i % 3] = mod28(p[(i - 2) % level] - p[(i - 1) % level] * q[i - 2]);
+            }
+            i++;
         }
-        i++ ;
+        if (i == 1) {
+            return 1;
+        } else {
+            return mod28(p[(i - 2) % level] - p[(i - 1) % level] * q[i - 2]);
+        }
     }
-    if (i == 1) {
-        return 1;
-    }
-    else {
-        return p[i-2] - p[i-1]*q[i-2] ;
-    }
-}
+
 }
