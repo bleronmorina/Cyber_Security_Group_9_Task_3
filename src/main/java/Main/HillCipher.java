@@ -103,6 +103,26 @@ public class HillCipher {
 
         return plaintextBuilder.toString();
     }
+static int mod26(int x) {
+    return x >= 0 ? (x%26) : 26-(Math.abs(x)%26) ;
+}
 
+static ArrayList<ArrayList<Integer>> getCofactor(ArrayList<ArrayList<Integer>> mat, int p, int q, int n) {
+    int i = 0, j = 0;
+    ArrayList<ArrayList<Integer>> temp = new ArrayList<ArrayList<Integer>>();
+
+    for (int row = 0; row < n; row++) {
+        if(row != p) {
+            ArrayList<Integer> tempRow = new ArrayList<Integer>();
+            for (int col = 0; col < n; col++) {
+                if(col != q) {
+                    tempRow.add(mat.get(row).get(col));
+                }
+            }
+            temp.add(tempRow);
+        }
+    }
+    return temp;
+}
 
 }
