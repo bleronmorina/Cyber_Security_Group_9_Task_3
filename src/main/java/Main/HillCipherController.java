@@ -12,7 +12,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
+import java.net.InterfaceAddress;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class HillCipherController implements Initializable {
@@ -223,6 +225,22 @@ public class HillCipherController implements Initializable {
         return matrix;
     }
 
+    private ArrayList<ArrayList<Integer>> getArrayListFromMatrix() {
+        ArrayList<ArrayList<Integer>> arrayList = new ArrayList<>();
+        int[][] matrix = getMatrixFromInput();
+        if (matrix != null) {
+            for (int[] row : matrix) {
+                ArrayList<Integer> list = new ArrayList<>();
+                for (int num : row) {
+                    list.add(num);
+                }
+                arrayList.add(list);
+            }
+        }
+        return arrayList;
+    }
+
+
     public void setMatrixVisibility(boolean set){
         matrixInput2x2.setVisible(set);
         matrixInput3x3.setVisible(set);
@@ -239,18 +257,18 @@ public class HillCipherController implements Initializable {
 
     @FXML
     private void goToDecrypt() throws IOException {
-        enter.setText("Enter cipher Text");
-        encryptButton.setText("Decrypt");
-        decryptButton.setStyle("    -fx-border-width: 3px;\n" +
-                "    -fx-border-radius: 50;\n" +
-                "    -fx-border-color: #e5f4f9;");
-        encryptButton1.setStyle("    -fx-border-width:0;");
-        encryptButton.setOnAction(e->{
-            int[][] matrix = getMatrixFromInput();
-            String plainText = plainTextInput.getText();
-            String encryptedText = HillCipher.decrypt(plainText, matrix);
-            encryptedTextOutput.setText(encryptedText);
-        });
+            enter.setText("Enter cipher Text");
+            encryptButton.setText("Decrypt");
+            decryptButton.setStyle("    -fx-border-width: 3px;\n" +
+                    "    -fx-border-radius: 50;\n" +
+                    "    -fx-border-color: #e5f4f9;");
+            encryptButton1.setStyle("    -fx-border-width:0;");
+            encryptButton.setOnAction(e->{
+                ArrayList<ArrayList<Integer>> matrix = getArrayListFromMatrix();
+                String ciphertext = plainTextInput.getText();
+                String plaintext = HillCipher.decrypt(ciphertext, matrix);
+                encryptedTextOutput.setText(plaintext);
+            });
     }
 
     @FXML
