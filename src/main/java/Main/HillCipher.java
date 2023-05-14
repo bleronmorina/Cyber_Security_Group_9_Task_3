@@ -53,7 +53,15 @@ public class HillCipher {
         StringBuilder cipherTextBuilder = new StringBuilder();
         for (int j = 0; j < cipherTextMatrix[0].length; j++) {
             for (int i = 0; i < cipherTextMatrix.length; i++) {
-                cipherTextBuilder.append((char) (cipherTextMatrix[i][j] + 65));
+                if(cipherTextMatrix[i][j] == 26){
+                    cipherTextBuilder.append('Ë');
+                }
+                else if(cipherTextMatrix[i][j] == 27){
+                    cipherTextBuilder.append('Ç');
+                }
+                else {
+                    cipherTextBuilder.append((char) (cipherTextMatrix[i][j] + 65));
+                }
             }
         }
 
@@ -64,7 +72,14 @@ public class HillCipher {
         // Convert ciphertext to matrix of numbers
         int[] ciphertextNumbers = new int[ciphertext.length()];
         for (int i = 0; i < ciphertext.length(); i++) {
-            ciphertextNumbers[i] = (int) ciphertext.charAt(i) - 65;
+            if(ciphertext.charAt(i) == 'Ë'){
+                ciphertextNumbers[i] = 26;
+            }
+            else if(ciphertext.charAt(i) == 'Ç'){
+                ciphertextNumbers[i] = 27;
+            }else {
+                ciphertextNumbers[i] = (int) ciphertext.charAt(i) - 65;
+            }
         }
         int n = key.size();
         int[][] ciphertextMatrix = new int[n][ciphertextNumbers.length / n];
